@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <newRule pattern="*/appender/appender-ref"
+      actionClass="ch.qos.logback.core.joran.action.AppenderRefAction"/>
+
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook">
+        <delay>100</delay>
+    </shutdownHook>
+    
+    <conversionRule conversionWord="nanoTime" converterClass="com.tersesystems.logback.classic.NanoTimeConverter" />
+    <conversionRule conversionWord="uniqueId" converterClass="com.tersesystems.logback.uniqueid.UniqueIdConverter" />
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%uniqueId %date{H:mm:ss.SSS} %highlight(%-5level) [%thread]: %message%n%ex</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="BLACKLITE" class="com.tersesystems.blacklite.logback.BlackliteAppender">
+        <file>/app/app.db</file>
+        <!-- disable batch inserts here -->
+        <batchInsertSize>1</batchInsertSize>
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+            <providers>
+                <pattern>
+                    <pattern>
+                        {
+                          "id": "%uniqueId",
+                          "relative_ns": "#asLong{%nanoTime}"                   
+                        }
+                    </pattern>
+                </pattern>
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+                <version/>
+                <message/>
+                <loggerName/>
+                <threadName/>
+                <logLevel/>
+                <logLevelValue/><!-- numeric value is useful for filtering >= -->
+                <stackHash/>
+                <logstashMarkers/>
+                <arguments/>
+                <stackTrace/>
+            </providers>
+        </encoder>
+    </appender>
+
+    <logger name="com.example" level="DEBUG"/>
+
+    <root level="INFO">
+      <appender class="com.tersesystems.logback.uniqueid.UniqueIdComponentAppender">
+        <appender class="com.tersesystems.logback.classic.NanoTimeComponentAppender">
+          <appender-ref ref="CONSOLE" />
+          <appender-ref ref="BLACKLITE" />
+        </appender>
+      </appender>
+  </root>
+</configuration>

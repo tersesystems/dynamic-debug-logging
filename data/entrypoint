@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Exit build script on first failure.
+set -e
+
+# Exit on unset variable.
+set -u
+
+# Echo commands to stdout.
+set -x
+
+export readonly DB_PATH="/app/app.db"
+
+/jbang/bin/jbang -Dserver.port=9001 /data/Download.java

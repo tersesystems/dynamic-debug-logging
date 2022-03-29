@@ -1,0 +1,10 @@
+access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
+secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
+region: ${LITESTREAM_REGION}
+addr: ":9091"
+dbs:
+  - path: /app/app.db
+    replicas:
+      - endpoint: ${AWS_S3_ENDPOINT}
+        url: ${DB_REPLICA_URL}
+        skip-verify: true

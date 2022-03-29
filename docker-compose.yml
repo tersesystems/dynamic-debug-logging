@@ -1,2 +1,74 @@
-# https://docs.docker.com/compose/compose-file/
+services:
+  app:
+    container_name: app
+    build: ./app
+    depends_on:
+      localstack:
+        condition: service_healthy
+      redis:
+        condition: service_healthy      
+    environment:
+      - AWS_S3_ENDPOINT=http://localstack:4566/
+      - LITESTREAM_ACCESS_KEY_ID=unused
+      - LITESTREAM_SECRET_ACCESS_KEY=unused
+      - LITESTREAM_REGION=us-east-1
+      - DB_REPLICA_URL=s3://localstack/app/app.db
+    ports:
+      - "8080:8080"
 
+  localstack:
+    container_name: localstack
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      - SERVICES=s3
+    volumes:
+      - ./localstack:/docker-entrypoint-initaws.d
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - awslocal s3 ls s3://localstack
+      interval: 5s
+      timeout: 10s
+      start_period: 10s
+
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: ghcr.io/joeferner/redis-commander:latest
+    depends_on:
+      redis:
+        condition: service_healthy  
+    restart: always
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - "8081:8081"
+
+  data:
+    container_name: data
+    build: ./data
+    depends_on:
+      localstack:
+        condition: service_healthy
+    environment:
+      - AWS_S3_ENDPOINT=http://localstack:4566/
+      - LITESTREAM_ACCESS_KEY_ID=unused
+      - LITESTREAM_SECRET_ACCESS_KEY=unused
+      - LITESTREAM_REGION=us-east-1
+      - DB_REPLICA_URL=s3://localstack/app/app.db
+    ports:
+      - "9001:9001"
