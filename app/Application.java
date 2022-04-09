@@ -67,7 +67,6 @@ public class Application {
 
   public static class HttpRequestFieldBuilder implements Field.Builder {
     public List<Field> requestFields(HttpServletRequest request) {
-      Field sessionId = string("session_id", request.getSessionId());
       Field urlField = string("request_uri", request.getRequestURI());
       Field methodField = string("request_method", request.getMethod());
       Field remoteAddressField = string("request_remote_addr", request.getRemoteAddr());

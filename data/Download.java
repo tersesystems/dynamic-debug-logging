@@ -26,7 +26,7 @@ public class Download {
   private static final Logger logger = LoggerFactory.getLogger(Download.class);
 
   public static void main(String[] args) throws Exception {
-    SpringApplication.run(Data.class, args);
+    SpringApplication.run(Download.class, args);
   }
 
   @RestController
