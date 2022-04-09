@@ -12,11 +12,19 @@ Once you have these debugging statements, you want to dump them out of the appli
 
 ## Overview
 
-The Spring Boot application in `app` runs and conditionally produces debug statements on every request.  The condition attached to the logger runs using a cached reference to a [Tweakflow script](https://github.com/tersesystems/echopraxia#dynamic-conditions-with-scripts) on Redis, and looks up the script at `com.example.Application`. If the script evaluation returns true, then the logger will produce a statement -- if there is no script, then the logger will operationally log at `INFO` and above.
+The Spring Boot application in `app` runs and conditionally produces debug statements on every request, using a structured logging framework called [Echopraxia](https://github.com/tersesystems/echopraxia).  
 
-Logging output is written to a bounded SQLite database at `/app/app.db`.  This database is observed by [litestream](https://litestream.io/) which asynchronously replicates changes to the S3 location in [localstack](https://github.com/localstack/localstack).
+The condition attached to the logger runs using a cached reference to a [Tweakflow script](https://github.com/tersesystems/echopraxia#dynamic-conditions-with-scripts) on Redis, and looks up the script at `com.example.Application`. If the script evaluation returns true, then the logger will produce a statement -- if there is no script, then the logger will operationally log at `INFO` and above.  The cache will [refresh](https://github.com/ben-manes/caffeine/wiki/Refresh) from Redis asynchronously, so if the script has changed on Redis then the cache will be updated.  
 
-Finally, the litestream replication data can be called to restore a database from localstack, making it available to download outside the application.
+Tweakflow is [specificially designed](https://twineworks.github.io/tweakflow/#why-tweakflow) to be limited and secure in what data it accesses, and it is possible to [limit execution time](https://twineworks.github.io/tweakflow/embedding.html#limiting-evaluation-time) to prevent denial of service, using an `AsyncLogger`.
+
+Logging output is written to a bounded, row-limited SQLite database at `/app/app.db` using [Blacklite](https://github.com/tersesystems/blacklite).  This database is observed by [litestream](https://litestream.io/) which asynchronously replicates changes to the S3 location in [localstack](https://github.com/localstack/localstack), ensuring that the logs are available in a secure and reliable location.
+
+Finally, the litestream replication data can be called from another Spring Boot application `download` to restore a database from localstack, making logs available for use outside the application.
+
+Here's a picture showing a happy user getting their logs.
+
+![workflow.png](images/workflow.png)
 
 ## Running
 
@@ -43,7 +51,7 @@ library echopraxia {
 }
 ```
 
-![redis-commander.png](redis-commander.png)
+![redis-commander.png](images/redis-commander.png)
 
 You can also search for conditions matching against arguments.  For example, using `find_string`:
 
