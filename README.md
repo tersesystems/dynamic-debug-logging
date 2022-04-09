@@ -1,6 +1,6 @@
-# Dynamic Debug Logging using Docker Compose
+# Dynamic Debug Logging
 
-This is a proof of concept that shows an application running with dynamic debug logging.
+This is a proof of concept using docker compose that shows an application running with dynamic debug logging -- logging that can be targeted to log only a particular session id or IP address at runtime, without restarting the application.
 
 ## Rationale
 
@@ -8,7 +8,7 @@ Assume that you have an application running in production.
 
 You want to enable some debug statements in the application, but only some of them.  You could be testing out a new feature, hunting down a bug, or verifying the execution flow.
 
-Once you have these debugging statements, you want to dump them out of the application and examine them in detail, without going through your operational logging stack (ELK, Splunk, etc).
+Once you have these debugging statements, you want to dump them out of the application and examine them in detail, without going through your operational logging stack (ELK, Splunk, etc).  You may want to pull logs from multiple instances or multiple services and make them all available at once so you can track the flow across logs.
 
 ## Overview
 
@@ -20,7 +20,7 @@ Finally, the litestream replication data can be called to restore a database fro
 
 ## Running
 
-You can run the docker compose file as normal once you've installed it.
+You can run the docker compose file as normal once you've [installed it](https://docs.docker.com/compose/install/).
 
 ```
 docker-compose up --build
@@ -74,4 +74,8 @@ select
 FROM entries
 ```
 
-You also have the option of visualizing the sqlite database using [Datasette](https://datasette.io/) or [Observable](observablehq.com/) using [SQL + Chart](https://observablehq.com/@observablehq/sql-chart).
+You also have the option of visualizing the sqlite database using [Datasette](https://datasette.io/) or [Observable](observablehq.com/) using [SQL + Chart](https://observablehq.com/@observablehq/sql-chart), or querying using a [notebook interface](https://tersesystems.com/blog/2019/09/28/applying-data-science-to-logs-for-developer-observability/).
+
+## Scaling
+
+Finally, although it's not shown here, you can leverage SQLite dump and import tools to aggregate multiple logs together into a single database with multiple tables, and use `UNION` to query across all multiple tables.   
