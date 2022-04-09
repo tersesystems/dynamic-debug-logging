@@ -16,7 +16,7 @@ The Spring Boot application in `app` runs and conditionally produces debug state
 
 The condition attached to the logger runs using a cached reference to a [Tweakflow script](https://github.com/tersesystems/echopraxia#dynamic-conditions-with-scripts) on Redis, and looks up the script at `com.example.Application`. If the script evaluation returns true, then the logger will produce a statement -- if there is no script, then the logger will operationally log at `INFO` and above.  The cache will [refresh](https://github.com/ben-manes/caffeine/wiki/Refresh) from Redis asynchronously, so if the script has changed on Redis then the cache will be updated.  
 
-Tweakflow is [specificially designed](https://twineworks.github.io/tweakflow/#why-tweakflow) to be limited and secure in what data it accesses, and it is possible to [limit execution time](https://twineworks.github.io/tweakflow/embedding.html#limiting-evaluation-time) to prevent denial of service, using an `AsyncLogger`.
+Tweakflow is designed to be [limited and secure](https://twineworks.github.io/tweakflow/#why-tweakflow) in what data it accesses, and it is possible to [limit execution time](https://twineworks.github.io/tweakflow/embedding.html#limiting-evaluation-time) to prevent denial of service, using an `AsyncLogger`.
 
 Logging output is written to a bounded, row-limited SQLite database at `/app/app.db` using [Blacklite](https://github.com/tersesystems/blacklite).  This database is observed by [litestream](https://litestream.io/) which asynchronously replicates changes to the S3 location in [localstack](https://github.com/localstack/localstack), ensuring that the logs are available in a secure and reliable location.
 
