@@ -6,10 +6,13 @@ package com.example;
 import java.io.*;
 import java.nio.charset.*;
 import java.sql.*;
+import java.time.format.DateTimeFormatter;
 import java.nio.*;
 import java.nio.file.*;
 import java.util.*;
 import java.net.*;
+import java.time.*;
+import java.time.format.*;
 
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
@@ -36,7 +39,7 @@ public class Download {
       logger.info("restore: ");
       try {
         String dbPath = System.getenv("DB_PATH");
-        Path sqlitePath = Paths.get("/data/blacklite.db");
+        Path sqlitePath = generatePath("blacklite", ".db");
         if (restoreDatabase(dbPath, sqlitePath) == 0) {
           Resource resource = null;
           try {
@@ -62,6 +65,18 @@ public class Download {
       Process p = pb.inheritIO().start();
       int result = p.waitFor();
       return result;
+    }
+
+    private Path generatePath(String prefix, String suffix) {
+      Path dir = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"));
+  
+      DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMddTHHmmss");
+      LocalDateTime now = LocalDateTime.now();
+      String s = prefix + df.format(now) + suffix;
+      Path name = dir.getFileSystem().getPath(s);
+      if (name.getParent() != null)
+        throw new IllegalArgumentException("Invalid prefix or suffix");
+      return dir.resolve(name);
     }
   }
 }
