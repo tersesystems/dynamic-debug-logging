@@ -27,7 +27,9 @@ import org.slf4j.*;
 public class Download {
 
   private static final Logger logger = LoggerFactory.getLogger(Download.class);
-
+  private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmssX");
+  private static final Path tempDir = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"));
+  
   public static void main(String[] args) throws Exception {
     SpringApplication.run(Download.class, args);
   }
@@ -37,9 +39,9 @@ public class Download {
     @GetMapping("/")
     public ResponseEntity restore() {
       logger.info("restore: ");
+      String dbPath = System.getenv("DB_PATH");
+      Path sqlitePath = generatePath("blacklite", ".db");
       try {
-        String dbPath = System.getenv("DB_PATH");
-        Path sqlitePath = generatePath("blacklite", ".db");
         if (restoreDatabase(dbPath, sqlitePath) == 0) {
           Resource resource = null;
           try {
@@ -57,6 +59,8 @@ public class Download {
       } catch (Exception e) {
         logger.error("Ooops", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+      } finally {
+        //Files.deleteIfExists(sqlitePath);
       }
     }
 
@@ -68,15 +72,12 @@ public class Download {
     }
 
     private Path generatePath(String prefix, String suffix) {
-      Path dir = FileSystems.getDefault().getPath(System.getProperty("java.io.tmpdir"));
-  
-      DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMddTHHmmss");
-      LocalDateTime now = LocalDateTime.now();
+      ZonedDateTime now = LocalDateTime.now().atZone(ZoneOffset.UTC);
       String s = prefix + df.format(now) + suffix;
-      Path name = dir.getFileSystem().getPath(s);
+      Path name = tempDir.getFileSystem().getPath(s);
       if (name.getParent() != null)
         throw new IllegalArgumentException("Invalid prefix or suffix");
-      return dir.resolve(name);
+      return tempDir.resolve(name);
     }
   }
 }
