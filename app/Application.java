@@ -1,5 +1,6 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
-//DEPS org.springframework.boot:spring-boot-starter-web:2.3.4.RELEASE
+//DEPS org.springframework.boot:spring-boot-starter-web:2.6.7
+//DEPS org.springframework.boot:spring-boot-starter-actuator:2.6.7
 //DEPS com.tersesystems.echopraxia:logstash:1.4.0
 //DEPS com.tersesystems.echopraxia:scripting:1.4.0
 //DEPS com.tersesystems.blacklite:blacklite-logback:1.1.0
@@ -9,6 +10,7 @@
 //SOURCES JedisFilter.java
 //FILES logback.xml
 //FILES echopraxia.properties
+//FILES application.properties
 
 package com.example;
 

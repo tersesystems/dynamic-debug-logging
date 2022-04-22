@@ -40,6 +40,8 @@ During this time, the application will send operational logging output to an SQL
 
 ## Editing
 
+You can change the logging levels of the application by using [http://localhost:8080/actuator/loggers](http://localhost:8080/actuator/loggers) which uses [Actuator](https://docs.spring.io/spring-boot/docs/2.5.6/reference/html/actuator.html#actuator.loggers).
+
 To change the script, go to [`http://localhost:8081`](http://localhost:8081) to run Redis Commander.
 
 Enter the key value as `com.example.Application` with the following [Tweakflow script](https://github.com/tersesystems/echopraxia#dynamic-conditions-with-scripts) as value:
