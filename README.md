@@ -10,6 +10,39 @@ You want to enable some debug statements in the application, but only some of th
 
 Once you have these debugging statements, you want to dump them out of the application and examine them in detail, without going through your operational logging stack (ELK, Splunk, etc).  You may want to pull logs from multiple instances or multiple services and make them all available at once so you can track the flow across logs.
 
+### Why SQLite and LiteStream instead of an Observability Stack?
+
+From a [reddit reply](https://www.reddit.com/r/java/comments/u547xw/dynamic_debug_logging/i59u913):
+
+> Why wouldn’t you want to use your logging stack?
+
+It's certainly not a requirement, but using the logging stack for debugging can be inconvenient, because production stacks have different parameters: 
+
+* Operational logs may be retained for much longer than diagnostic logs
+* Different cost centers (justification for huge diagnostic dumps in budget)
+* Expected to be consistent (large surges in logs cause concern)
+* Expected to be available (large surges can cause delays in the pipeline)
+
+In addition, the operational logging pipeline may have additional security and auditing restraints depending on the audience.  All of this of course varies depending on the organization, teams, and data.
+
+Implementing a second logging stack for diagnostics is primarily to keep it out of the way of operational logging, so ops is not "polluted" by diagnostic logs and there can be more control over how the diagnostic logs are processed and accessed.  Because diagnostic logs from production can contain sensitive info and internal state dumps, it's very important to be able to control that.
+
+> Rather than use your logging stack, you implement a second logging stack. Backed by… sql lite? It seems like you’ve added a lot of features here for marginal utility, compared to rotating log files and uploading them to s3 in the background.
+
+The blunt reason is that if logs aren't going through a stack, then there needs to be some other way to organize and search that data, preferably something that's self-contained, well supported, portable across multiple platforms, and is a "well known no surprises" technology. 
+
+ I do think that SQLite has a [number of advantages](https://tersesystems.com/blog/2020/11/26/queryable-logging-with-blacklite/) over flat files, especially for diagnostic purposes:
+
+* Embedded and standalone database, great for diagnostic backtraces.
+* Sorting logs by multiple criteria is super useful in diagnostic logs that may take place within a millisecond -- under Logback's logging framework resolution.
+* Immediate GUI support.
+* Built-in JSON support.
+* Filtering / Processing data to scrub and replace PII involves SQL, not JSON processing or jq.
+* Ability to manage and import multiple sources (joining across flat files is a pain).
+* replicating with livestream via WAL and snapshots is (arguably) cleaner than file rollovers and s3 appends.
+
+Again, YMMV and writing as JSON flat-file / Cribl / Kinesis Firehose are all valid choices.
+
 ## Overview
 
 The Spring Boot application in `app` runs and conditionally produces debug statements on every request, using a structured logging framework called [Echopraxia](https://github.com/tersesystems/echopraxia).  
