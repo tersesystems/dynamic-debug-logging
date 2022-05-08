@@ -2,18 +2,17 @@ package com.example;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.tersesystems.echopraxia.Condition;
-import com.tersesystems.echopraxia.Level;
-import com.tersesystems.echopraxia.LoggingContext;
-import com.tersesystems.echopraxia.core.CoreLogger;
-import com.tersesystems.echopraxia.core.CoreLoggerFilter;
+
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.tersesystems.echopraxia.api.*;
 import com.tersesystems.echopraxia.scripting.ScriptCondition;
 import com.tersesystems.echopraxia.scripting.ScriptHandle;
+
 import org.slf4j.Logger;
+
 import redis.clients.jedis.*;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.providers.PooledConnectionProvider;

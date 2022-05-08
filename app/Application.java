@@ -1,8 +1,9 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS org.springframework.boot:spring-boot-starter-web:2.6.7
 //DEPS org.springframework.boot:spring-boot-starter-actuator:2.6.7
-//DEPS com.tersesystems.echopraxia:logstash:1.4.0
-//DEPS com.tersesystems.echopraxia:scripting:1.4.0
+//DEPS com.tersesystems.echopraxia:logger:2.0.0
+//DEPS com.tersesystems.echopraxia:logstash:2.0.0
+//DEPS com.tersesystems.echopraxia:scripting:2.0.0
 //DEPS com.tersesystems.blacklite:blacklite-logback:1.1.0
 //DEPS com.tersesystems.logback:logback-uniqueid-appender:1.0.2
 //DEPS redis.clients:jedis:4.1.1
@@ -30,7 +31,9 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Arrays;
 
-import com.tersesystems.echopraxia.*;
+import com.tersesystems.echopraxia.Logger;
+import com.tersesystems.echopraxia.LoggerFactory;
+import com.tersesystems.echopraxia.api.*;
 
 import java.time.LocalDateTime;
 
@@ -42,7 +45,7 @@ public class Application {
   }
 
   private final Logger<HttpRequestFieldBuilder> logger = LoggerFactory.getLogger(Application.class)
-      .withFieldBuilder(HttpRequestFieldBuilder.class)
+      .withFieldBuilder(new HttpRequestFieldBuilder())
       .withFields(
         fb -> {
           // Any fields that you set in context you can set conditions on later,
@@ -58,7 +61,7 @@ public class Application {
 
     @GetMapping("/")
     public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-      logger.debug("greeting param {}", fb -> fb.onlyString("name", name));
+      logger.debug("greeting param {}", fb -> fb.string("name", name));
       return new Greeting(counter.incrementAndGet(), String.format(template, name));
     }
   }
@@ -67,12 +70,12 @@ public class Application {
     return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
   }
 
-  public static class HttpRequestFieldBuilder implements Field.Builder {
-    public List<Field> requestFields(HttpServletRequest request) {
+  public static class HttpRequestFieldBuilder implements FieldBuilder {
+    public FieldBuilderResult requestFields(HttpServletRequest request) {
       Field urlField = string("request_uri", request.getRequestURI());
       Field methodField = string("request_method", request.getMethod());
       Field remoteAddressField = string("request_remote_addr", request.getRemoteAddr());
-      return Arrays.asList(urlField, methodField, remoteAddressField);
+      return list(urlField, methodField, remoteAddressField);
     }
   }
 
