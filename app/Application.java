@@ -1,10 +1,10 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS org.springframework.boot:spring-boot-starter-web:2.6.7
 //DEPS org.springframework.boot:spring-boot-starter-actuator:2.6.7
-//DEPS com.tersesystems.echopraxia:logger:2.1.0
-//DEPS com.tersesystems.echopraxia:logstash:2.1.0
-//DEPS com.tersesystems.echopraxia:scripting:2.1.0
-//DEPS com.tersesystems.blacklite:blacklite-logback:1.2.0
+//DEPS com.tersesystems.echopraxia:logger:2.2.0
+//DEPS com.tersesystems.echopraxia:logstash:2.2.0
+//DEPS com.tersesystems.echopraxia:scripting:2.2.0
+//DEPS com.tersesystems.blacklite:blacklite-logback:1.1.0
 //DEPS com.tersesystems.logback:logback-uniqueid-appender:1.0.2
 //DEPS redis.clients:jedis:4.1.1
 //DEPS com.github.ben-manes.caffeine:caffeine:2.9.3

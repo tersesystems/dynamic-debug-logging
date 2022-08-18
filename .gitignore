@@ -1,2 +1,4 @@
 *.db
-.vscode
+.vscode/
+*.iml
+.idea/
