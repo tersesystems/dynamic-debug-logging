@@ -1,5 +1,5 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
-//DEPS org.springframework.boot:spring-boot-starter-web:2.3.4.RELEASE
+//DEPS org.springframework.boot:spring-boot-starter-web:2.6.7
 
 package com.example;
 

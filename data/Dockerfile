@@ -1,4 +1,4 @@
-FROM adoptopenjdk:15
+FROM adoptopenjdk:8
 
 WORKDIR /data
 
