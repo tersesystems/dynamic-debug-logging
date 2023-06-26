@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.tersesystems.echopraxia.api.*;
+import com.tersesystems.echopraxia.spi.*;
 import com.tersesystems.echopraxia.scripting.ScriptCondition;
 import com.tersesystems.echopraxia.scripting.ScriptHandle;
 
