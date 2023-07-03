@@ -1,9 +1,10 @@
 //usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS org.springframework.boot:spring-boot-starter-web:2.6.7
 //DEPS org.springframework.boot:spring-boot-starter-actuator:2.6.7
-//DEPS com.tersesystems.echopraxia:logger:3.0.0
-//DEPS com.tersesystems.echopraxia:logstash:3.0.0
-//DEPS com.tersesystems.echopraxia:scripting:3.0.0
+//DEPS com.tersesystems.echopraxia:logger:3.0.1
+//DEPS com.tersesystems.echopraxia:logstash:3.0.1
+//DEPS com.tersesystems.echopraxia:scripting:3.0.1
+//DEPS ch.qos.logback:logback-classic:1.4.8
 //DEPS com.tersesystems.blacklite:blacklite-logback:1.2.2
 //DEPS com.tersesystems.logback:logback-uniqueid-appender:1.0.3
 //DEPS redis.clients:jedis:4.1.1
@@ -44,8 +45,7 @@ public class Application {
     SpringApplication.run(Application.class, args);
   }
 
-  private final Logger<HttpRequestFieldBuilder> logger = LoggerFactory.getLogger(Application.class)
-      .withFieldBuilder(new HttpRequestFieldBuilder())
+  private final Logger<HttpRequestFieldBuilder> logger = LoggerFactory.getLogger(Application.class, new HttpRequestFieldBuilder())
       .withFields(
         fb -> {
           // Any fields that you set in context you can set conditions on later,
